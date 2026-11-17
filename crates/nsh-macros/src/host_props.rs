@@ -10,9 +10,9 @@ use crate::ts_doc;
 /// One JS name of a variant.
 struct Name {
     name: String,
-    /// `ios = …` / `android = …` / `macos = …` / `desktop = …` /
-    /// `web = …`: inside `ios={{…}}` / `android={{…}}` / `macos={{…}}` /
-    /// `desktop={{…}}` / `web={{…}}`.
+    /// `ios = …` / `android = …` / `macos = …` / `windows = …` /
+    /// `desktop = …` / `web = …`: inside `ios={{…}}` / `android={{…}}` /
+    /// `macos={{…}}` / `windows={{…}}` / `desktop={{…}}` / `web={{…}}`.
     platform: TokenStream2,
 }
 
@@ -39,6 +39,7 @@ fn variant_attrs(attrs: &[syn::Attribute]) -> syn::Result<VariantAttrs> {
         "ios" => quote!(::nsh_core::js::host::Platform::Ios),
         "android" => quote!(::nsh_core::js::host::Platform::Android),
         "macos" => quote!(::nsh_core::js::host::Platform::Macos),
+        "windows" => quote!(::nsh_core::js::host::Platform::Windows),
         "desktop" => quote!(::nsh_core::js::host::Platform::Desktop),
         "web" => quote!(::nsh_core::js::host::Platform::Web),
         _ => quote!(::nsh_core::js::host::Platform::All),
@@ -54,7 +55,7 @@ fn variant_attrs(attrs: &[syn::Attribute]) -> syn::Result<VariantAttrs> {
                 .map(|i| i.to_string())
                 .unwrap_or_default();
             match key.as_str() {
-                "js" | "ios" | "android" | "macos" | "desktop" | "web" => out.names.push(Name {
+                "js" | "ios" | "android" | "macos" | "windows" | "desktop" | "web" => out.names.push(Name {
                     name: meta.value()?.parse::<LitStr>()?.value(),
                     platform: platform(&key),
                 }),
@@ -72,7 +73,7 @@ fn variant_attrs(attrs: &[syn::Attribute]) -> syn::Result<VariantAttrs> {
                 "shared" => out.shared = true,
                 _ => {
                     return Err(meta.error(
-                        "expected `js`, `ios`, `android`, `macos`, `desktop`, `web`, `default`, `min`, `max`, `on`, `ts`, \
+                        "expected `js`, `ios`, `android`, `macos`, `windows`, `desktop`, `web`, `default`, `min`, `max`, `on`, `ts`, \
                          `with`, `reset`, `required`, `nested`, `internal`, `once` or `shared`",
                     ));
                 }

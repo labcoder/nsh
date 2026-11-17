@@ -3364,6 +3364,7 @@
 		"ios",
 		"android",
 		"macos",
+		"windows",
 		"desktop",
 		"web"
 	]);

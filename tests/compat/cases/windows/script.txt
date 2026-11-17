@@ -1,0 +1,15 @@
+# What a user does and sees (compat/apps.rs): each case after its tap.
+platform windows
+# material
+tap id:case-material
+expect Blur material
+prop id:backdrop-surface windows.material blur
+noprop id:backdrop-surface macos.backdrop
+style id:backdrop-surface backgroundColor #ffffff66
+tap id:backdrop-clear
+noprop id:backdrop-surface windows.material
+style id:backdrop-surface backgroundColor #ffffff66
+tap id:backdrop-set
+prop id:backdrop-surface windows.material blur
+covers [props] windows
+covers [props] windows.material

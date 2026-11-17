@@ -7590,6 +7590,71 @@ fn macos_backdrop_decodes_and_survives_restyling() {
     assert_eq!(decode(HostTestValue::Null), Prop::MacOsBackdrop(None));
 }
 
+/// `windows={{ material }}` decodes its one name, reaches the view
+/// style, and clears; a name of its own, so `macos={{ backdrop }}`
+/// cannot take it.
+#[test]
+fn windows_material_decodes_and_clears() {
+    use crate::{
+        WindowsMaterial,
+        js::host::{HostCx, HostProps},
+    };
+    let decode = |value: HostTestValue<'_>| {
+        let mut cx = HostCx::for_element(Tag::View);
+        <Prop as HostProps>::decode("material", &value, &mut cx)
+            .expect("a Windows backdrop prop")
+            .expect("a value")
+    };
+    let prop = decode(HostTestValue::String("blur"));
+    assert_eq!(prop, Prop::WindowsMaterial(Some(WindowsMaterial::Blur)));
+    // An unknown name, a value of another type and null set none: a prop
+    // never fails.
+    for value in [
+        HostTestValue::String("mica"),
+        HostTestValue::Number(1.0),
+        HostTestValue::Null,
+    ] {
+        assert_eq!(decode(value), Prop::WindowsMaterial(None));
+    }
+
+    let mut c = core();
+    apply(
+        &mut c,
+        vec![
+            Op::Create {
+                id: 2,
+                tag: Tag::View,
+            },
+            Op::SetProp {
+                id: 2,
+                prop: prop.clone(),
+            },
+            Op::Insert {
+                parent: ROOT_ID,
+                child: 2,
+                before: None,
+            },
+        ],
+    );
+    assert_eq!(
+        view_style_of(&c.commit().unwrap(), 2)
+            .unwrap()
+            .windows_material,
+        Some(WindowsMaterial::Blur)
+    );
+    c.apply(Op::SetProp {
+        id: 2,
+        prop: <Prop as HostProps>::reset(&prop).unwrap(),
+    })
+    .unwrap();
+    assert_eq!(
+        view_style_of(&c.commit().unwrap(), 2)
+            .unwrap()
+            .windows_material,
+        None
+    );
+}
+
 #[test]
 fn glass_tint_updates_and_removal_keeps_effects() {
     let mut c = core();
