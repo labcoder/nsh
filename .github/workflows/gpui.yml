@@ -18,8 +18,6 @@ on:
       - "examples/embed-gpui/**"
       - ".github/workflows/gpui.yml"
       - ".github/actions/cargo/**"
-  schedule:
-    - cron: "0 */3 * * *"
   merge_group:
     types: [checks_requested]
   workflow_dispatch:

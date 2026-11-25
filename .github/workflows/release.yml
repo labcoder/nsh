@@ -47,9 +47,6 @@ on:
   # Publishing a stable release refreshes the nightly (see above).
   release:
     types: [published]
-  schedule:
-    # 18:30 UTC, 02:30 in Singapore: after the day's merges.
-    - cron: "30 18 * * *"
   workflow_dispatch:
     inputs:
       tag:
